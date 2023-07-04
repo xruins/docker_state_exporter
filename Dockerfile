@@ -1,4 +1,5 @@
 FROM golang:alpine as builder
+LABEL org.opencontainers.image.source="https://github.com/xruins/docker_state_exporter"
 RUN apk update && apk add git && apk add ca-certificates
 COPY *.go $GOPATH/src/mypackage/myapp/
 WORKDIR $GOPATH/src/mypackage/myapp/
