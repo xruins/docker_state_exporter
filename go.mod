@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/docker/docker v24.0.6+incompatible
-	github.com/go-kit/kit v0.12.0
+	github.com/go-kit/kit v0.13.0
 	github.com/prometheus/client_golang v1.17.0
 )
 
