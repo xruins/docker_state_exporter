@@ -3,12 +3,17 @@
   "extends": [
     "config:base",
     ":automerge",
-    "schedule:automergeDaily",
+    "schedule:automergeDaily"
   ],
   "packageRules": [
     {
-      "matchDepTypes": ["devDependencies"],
-      "matchPackagePatterns": ["lint", "prettier"],
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "matchPackagePatterns": [
+        "lint",
+        "prettier"
+      ],
       "automerge": true
     }
   ]
