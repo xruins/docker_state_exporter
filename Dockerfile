@@ -1,4 +1,4 @@
-FROM golang:1.22.5 as builder
+FROM golang:1.23.3 AS builder
 LABEL org.opencontainers.image.source="https://github.com/xruins/docker_state_exporter"
 COPY *.go $GOPATH/src/mypackage/myapp/
 COPY go.* $GOPATH/src/mypackage/myapp/
