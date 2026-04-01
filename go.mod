@@ -3,7 +3,7 @@ module github.com/xruins/docker_state_exporter
 go 1.26
 
 require (
-	github.com/docker/docker v27.4.0+incompatible
+	github.com/docker/docker v27.5.1+incompatible
 	github.com/prometheus/client_golang v1.20.5
 )
 
