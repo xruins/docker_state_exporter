@@ -4,6 +4,9 @@
     "config:recommended",
     ":dependencyDashboard",
     ":automergeAll",
-    "schedule:automergeDaily",
+    "schedule:automergeDaily"
   ],
+  "go": {
+    "enabled": true
+  }
 }
