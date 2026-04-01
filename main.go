@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -16,7 +17,6 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
-	"github.com/go-kit/kit/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -26,9 +26,14 @@ const (
 	cachePeriod = 1 * time.Second
 )
 
+type ContainerClient interface {
+	ContainerList(ctx context.Context, options container.ListOptions) ([]types.Container, error)
+	ContainerInspect(ctx context.Context, containerID string) (types.ContainerJSON, error)
+}
+
 type dockerHealthCollector struct {
 	mu                 sync.Mutex
-	containerClient    *client.Client
+	containerClient    ContainerClient
 	containerInfoCache []types.ContainerJSON
 	lastseen           time.Time
 }
@@ -153,23 +158,11 @@ func (c *dockerHealthCollector) collectContainer() {
 	}
 }
 
-type loggerWrapper struct {
-	Logger *log.Logger
-}
-
-func (l *loggerWrapper) Println(v ...interface{}) {
-	(*l.Logger).Log("messages", v)
-}
-
-// Define loggers.
-var (
-	normalLogger = log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
-	errorLogger  = log.NewJSONLogger(log.NewSyncWriter(os.Stderr))
-)
+var logger *slog.Logger
 
 func errCheck(err error) {
 	if err != nil {
-		errorLogger.Log("message", err)
+		logger.Error("error occurred", "err", err)
 		os.Exit(1)
 	}
 }
@@ -180,10 +173,11 @@ var (
 )
 
 func init() {
-	normalLogger = log.With(normalLogger, "timestamp", log.DefaultTimestampUTC)
-	normalLogger = log.With(normalLogger, "severity", "info")
-	errorLogger = log.With(errorLogger, "timestamp", log.DefaultTimestampUTC)
-	errorLogger = log.With(errorLogger, "severity", "error")
+	opts := &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}
+	handler := slog.NewJSONHandler(os.Stdout, opts)
+	logger = slog.New(handler)
 	prometheus.MustRegister(prometheus.NewBuildInfoCollector())
 }
 
@@ -211,9 +205,9 @@ func main() {
 
 	http.Handle("/metrics", promhttp.HandlerFor(
 		prometheus.DefaultGatherer,
-		promhttp.HandlerOpts{ErrorLog: &loggerWrapper{Logger: &errorLogger}, EnableOpenMetrics: true}))
+		promhttp.HandlerOpts{EnableOpenMetrics: true}))
 
-	normalLogger.Log("message", "Server listening...", "address", address)
+	logger.Info("Server listening", "address", *address)
 
 	server := &http.Server{Addr: *address, Handler: nil}
 
@@ -227,12 +221,12 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, os.Interrupt)
 	<-quit
-	normalLogger.Log("message", "Server shutting down...")
+	logger.Info("Server shutting down")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
-		errorLogger.Log("message", fmt.Sprintf("Failed to gracefully shutdown: %v", err))
+		logger.Error("Failed to gracefully shutdown", "err", err)
 	}
-	normalLogger.Log("message", "Server shutdown")
+	logger.Info("Server shutdown")
 }

@@ -1,10 +1,9 @@
 module github.com/xruins/docker_state_exporter
 
-go 1.23.4
+go 1.26
 
 require (
 	github.com/docker/docker v27.4.0+incompatible
-	github.com/go-kit/kit v0.13.0
 	github.com/prometheus/client_golang v1.20.5
 )
 
@@ -17,8 +16,6 @@ require (
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
-	github.com/go-kit/log v0.2.1 // indirect
-	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
@@ -41,8 +38,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.33.0 // indirect
 	go.opentelemetry.io/otel/trace v1.33.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20241209162323-e6fa225c2576 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20241209162323-e6fa225c2576 // indirect
+	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11 // indirect
 	google.golang.org/protobuf v1.35.2 // indirect
 	gotest.tools/v3 v3.5.1 // indirect
 )
