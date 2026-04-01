@@ -7,6 +7,10 @@
     "schedule:automergeDaily"
   ],
   "go": {
-    "enabled": true
+    "enabled": true,
+    "stabilityDays": 7
+  },
+  "dependencies": {
+    "stabilityDays": 14
   }
 }
